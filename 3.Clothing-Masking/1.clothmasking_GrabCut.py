@@ -49,8 +49,8 @@ def cloth_masking_with_grabcut(im_path, mask_path, viz=False):
     # th_closed = cv2.morphologyEx(th_opened, cv2.MORPH_CLOSE, kernel)
 
     # 3.3 erosion for thinning out boundary
-    kernel = np.ones((3, 3), np.uint8)
-    th_eroded = cv2.erode(th_opened, kernel, iterations=1)
+    # kernel = np.ones((3, 3), np.uint8)
+    # th_eroded = cv2.erode(th_opened, kernel, iterations=1)
 
     # 4. GrabCut
 

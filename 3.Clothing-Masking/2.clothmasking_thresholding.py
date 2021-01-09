@@ -55,7 +55,7 @@ def cloth_masking(im_path, save_path, viz=False):
 
     # erosion for thinning out boundary
     kernel = np.ones((3,3),np.uint8)
-    th_eroded = cv2.erode(th_opened,kernel,iterations = 1)
+    th_eroded = cv2.erode(th_opened,kernel,iterations=1)
 
     if viz:
         # plot figures:
