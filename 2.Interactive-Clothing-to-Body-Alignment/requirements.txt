@@ -1,0 +1,9 @@
+#python=3.x
+opencv-contrib-python
+numpy
+pandas
+matplotlib
+pillow
+sortedcontainers
+vectormath
+scikit-image
