@@ -24,26 +24,6 @@ def mask_segm(immask):
     return mask
 
 
-def apply_tps(mask_shape, cloth_shape, matches, img):
-    """
-    :param body_shape: target points for TPS
-    :param cloth_shape: source points for TPS
-    :param matches: point matches
-    :param img: clothing image
-    :return: matched/warped image
-    """
-    # Forward TPS
-    tps = cv2.createThinPlateSplineShapeTransformer(
-        regularizationParameter=0)
-    tps.estimateTransformation(mask_shape, cloth_shape, matches)
-    tps.applyTransformation(mask_shape)
-
-    # forward warping
-    warped_img = tps.warpImage(img)
-
-    return warped_img
-
-
 def apply_gray_dilation(img):
     """
     :param img: input image
@@ -67,6 +47,7 @@ def apply_gray_dilation(img):
 
 
 def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=True):
+    # read images
     img = Image.open(im_path)
     immask = Image.open(mask_path)
     c_mask = cv2.imread(mask_path, 0)

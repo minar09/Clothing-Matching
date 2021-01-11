@@ -55,9 +55,8 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
     """
 
     # read from paths
-    img = cv2.imread(im_path)
-    img1 = Image.open(im_path)
-    img2 = cv2.imread(im_path, 0)
+    img_rgb = Image.open(im_path)
+    img_gray = cv2.imread(im_path, 0)
     immask = Image.open(mask_path)
     c_mask = cv2.imread(mask_path, 0)
     mask = mask_segm(immask)
@@ -69,7 +68,7 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
     cemask = mask_segm(ce_mask)
     cd_mask = cv2.dilate(c_mask, kernel, iterations=iter)
     dilated_boundary_mask = cd_mask - ce_mask
-    eroded_cloth = img1 * cemask
+    eroded_cloth = img_rgb * cemask
 
     emask = mask_segm(ce_mask)
     dbmask = mask_segm(dilated_boundary_mask)
@@ -83,7 +82,7 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
     y_smpl_2nd = []
 
     # get contours
-    ret, th_bin = cv2.threshold(img2, 250, 255, cv2.THRESH_BINARY_INV)
+    ret, th_bin = cv2.threshold(img_gray, 250, 255, cv2.THRESH_BINARY_INV)
     cloth_contours, hierarchy = cv2.findContours(th_bin, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
     mask_contours, hierarchy = cv2.findContours(c_mask, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
@@ -124,7 +123,7 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
         matches.append(cv2.DMatch(i, i, 0))
 
     # eroded clothing texture
-    t1 = img1 * emask
+    t1 = img_rgb * emask
     t1[t1 == 255] = 0
 
     # extended clothing textures
@@ -147,7 +146,7 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
         # plot figures:
         titles = ['Original Image', 'Eroded cloth', 'extra boundary', 'segmented (original)', 'Dilated cloth',
                   'Extrapolated']
-        images = [img1, eroded_cloth, dilated_boundary_mask, img1 * mask, dilated_cloth, exp_img]
+        images = [img_rgb, eroded_cloth, dilated_boundary_mask, img_rgb * mask, dilated_cloth, exp_img]
 
         for i in range(6):
             plt.subplot(2, 3, i + 1), plt.imshow(images[i])
