@@ -3,9 +3,9 @@ A repository of tools implemented at SeoulTech Multimedia Computing Laboratory (
 
 ## 1) Clothing texture alignment (Boundary extrapolation and matching)
 
-### 1.1) Texture alignment using TPS transformation
+1.1) Texture alignment using TPS transformation
 
-### 1.2) Texture alignment using dilation operation
+1.2) Texture alignment using dilation operation
 
 Details: https://github.com/minar09/Clothing-Matching/blob/main/1.Clothing-Texture-Alignment/README.md
 
@@ -13,7 +13,7 @@ Details: https://github.com/minar09/Clothing-Matching/blob/main/1.Clothing-Textu
 
 ## 2) Interactive clothing to body alignment (Manual 2D matching)
 
-### Iteratively matching/aligning a clothing image to a standard human body by positioning the selected vertices manually.
+Iteratively matching/aligning a clothing image to a standard human body by positioning the selected vertices manually.
 
 Details: https://github.com/minar09/Clothing-Matching/blob/main/2.Interactive-Clothing-to-Body-Alignment/README.md
 
@@ -21,9 +21,9 @@ Details: https://github.com/minar09/Clothing-Matching/blob/main/2.Interactive-Cl
 
 ## 3) Clothing masking (Generating binary segmentation/silhouette)
 
-### 3.1) Masking with GrabCut using priors
+3.1) Masking with GrabCut using priors
 
-### 3.2) Masking with binary thresholding
+3.2) Masking with binary thresholding
 
 Details: https://github.com/minar09/Clothing-Matching/blob/main/3.Clothing-Masking/README.md
 
