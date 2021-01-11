@@ -9,7 +9,7 @@ An user interactive tool for matching/aligning/fitting clothing manually to the 
 - Apply As-Rigid-As-Possible (ARAP) transformation from source to target for alignment/matching
 
 ## Usage instructions (for interactive matching by user):
-- Run `python main.py <cloth_path>`
+- Run `python main.py <cloth_path> <cloth_mask_path>`
 - Left-Click on the blue circled points to select the control point (Mouse left-click)
 - Right-Click anywhere after selecting a control point, to change/relocate that point
 - Selection and relocating multiple control points before applying deformation is applicable
