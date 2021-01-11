@@ -13,6 +13,8 @@ Details: https://github.com/minar09/Clothing-Matching/blob/main/1.Clothing-Textu
 
 ## 2) Interactive clothing to body alignment (Manual 2D matching)
 
+### Iteratively matching/aligning a clothing image to a standard human body by positioning the selected vertices manually.
+
 Details: https://github.com/minar09/Clothing-Matching/blob/main/2.Interactive-Clothing-to-Body-Alignment/README.md
 
 

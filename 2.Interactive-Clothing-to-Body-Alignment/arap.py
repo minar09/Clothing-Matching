@@ -47,8 +47,6 @@ def create_cloth_mesh(cloth_img, cloth_contours):
             maxcontourlen = len(cloth_contours[i])
             maxcontouridx = i
     max_contour = cloth_contours[maxcontouridx]
-    # max_contour = max(cloth_contours, key=cv2.contourArea)
-    # maxcontourlen = len(max_contour)
 
     # get all mesh points/vertices and handle points
 
@@ -58,7 +56,7 @@ def create_cloth_mesh(cloth_img, cloth_contours):
     # 1.2 add sampled points from contour
     # seglen = maxcontourlen//20
     seglen = maxcontourlen//30
-    # print(seglen)
+
     vidx = 0
     for ind, each in enumerate(max_contour):
 
@@ -80,14 +78,8 @@ def create_cloth_mesh(cloth_img, cloth_contours):
             except Exception as err:
                 print(err)
 
-        """if ind % 10 == 0:   # choosing something less than seglen
-            if tuple(each[0]) not in points:
-                points.append(tuple(each[0]))   # add some extra mesh points
-                vidx = vidx + 1"""
-
     # 2. the bounding box
-    # xmax, ymax = width - 1, height - 1
-    # xmin, ymin = 0, 0
+
     # get minimum and maximum of the contour
     mc_x = max_contour[:, :, 0]
     mc_y = max_contour[:, :, 1]
@@ -101,8 +93,7 @@ def create_cloth_mesh(cloth_img, cloth_contours):
     for _y in range(int((ymax - ymin) / seglen)):
         for _x in range(int((xmax - xmin) / seglen)):
             x, y = xmin + seglen * _x, ymin + seglen * _y  # bug fixed 2020. 8. 16
-            #print("grid vertex:", x, y, )
-            # if( clothmask[seglen*_y, seglen*_x] != 0): # inside of cloth
+
             if ymin <= y <= ymax and xmin <= x <= xmax:
                 # >= 0:  # check if inside cloth contour
                 dist = cv2.pointPolygonTest(max_contour, (x, y), True)
@@ -115,8 +106,6 @@ def create_cloth_mesh(cloth_img, cloth_contours):
 
     # 4 build triangles
     # @Note: now we generate rectangle mesh only, so do not need to use Subdiv2D
-    # rect = (0, 0, width, height)
-    #print("1. points:", points)
     rect = (xmin, ymin, xmax, ymax)
     # @TODO Do we need to use opencv ? We could build more easily
     subdiv = cv2.Subdiv2D(rect)
@@ -125,10 +114,6 @@ def create_cloth_mesh(cloth_img, cloth_contours):
 
     # why we get points for minus coordinates
     triangleList = subdiv.getTriangleList()
-    #print("2. triangleList:", triangleList[0:10])
-
-    # triimg = cloth_img.copy()
-    # painter.draw_delaunay2(triimg, triangleList, (255, 255, 255))  # outside triangles should be removed.
 
     # 5 build triangles (of indices of vertices) from point locations
     triangles = np.zeros((len(triangleList), 3), dtype=int)
@@ -243,8 +228,6 @@ def _checkCloseToHandles(handles, vertices, point):
 
 def arap_transform(cloth, gOriginalMesh, gDeformedMesh):
 
-    # gDeformedMesh = mesh_deformer.updateMesh(gOriginalMesh, gDeformedMesh, gControlPts, bRigid=True)
-
     pwtform = PiecewiseAffineTransform()
     pwtform.estimate(gDeformedMesh.vertices, gOriginalMesh.vertices)
     warpedUpperClothfloat = warp(
@@ -257,75 +240,6 @@ def arap_transform(cloth, gOriginalMesh, gDeformedMesh):
     return warpedUpperCloth
 
 
-def apply_arap(cloth, cloth_x_vals, cloth_y_vals, smpl_x_vals, smpl_y_vals):
-    """
-    Setup meshes and apply ARAP deformation
-    :param cloth_x_vals:
-    :param cloth_y_vals:
-    :param smpl_x_vals:
-    :param smpl_y_vals:
-    :return:
-    """
-    # build the original mesh
-    num_vertices = len(cloth_x_vals)  # nV: number of vertices
-    step = 40.0
-    offset = 20.0
-    sampleMesh = MakeSampleMesh(num_vertices, offset, step)
-    gSelectedVertices = SortedList()  # gSelectedVertices
-
-    # clone mesh for original and deformed
-    v = np.array(sampleMesh.vertices, copy=True)
-    t = np.array(sampleMesh.triangles, copy=True)
-
-    # insert cloth handle vertices (for dummy running)
-    # s_v = v.copy()
-    # for ind, each in zip(cloth_x_vals, cloth_y_vals):
-    #    s_v[ind] = each
-
-    # insert model handle vertices (for dummy running)
-    # t_v = v.copy()
-    # for ind, each in zip(cloth_x_vals, cloth_y_vals):
-    #    t_v[ind] = each
-
-    # make meshes for original and deformed
-    gOriginalMesh = TriangleMesh(v, t)
-    gDeformedMesh = TriangleMesh(v, t)
-
-    # select constraints vertices
-    for i in range(num_vertices):
-        gSelectedVertices.add(i)
-
-    # handle vertices
-    src_v = np.vstack((cloth_x_vals, cloth_y_vals)).T
-    tgt_v = np.vstack((smpl_x_vals, smpl_y_vals)).T
-
-    # run deformation
-    mesh_deformer.arapDeform(gOriginalMesh, gDeformedMesh, gSelectedVertices)
-
-    # warping
-    # create warping  engine
-    # @TODO create once and reuse it.
-    # if pwtform == None:
-    pwtform = PiecewiseAffineTransform()
-
-    # estimate piecewise affine matrixes for sub-traingles
-    # Notice: "PiecewiseAffineTransform" generate its own triangles, not given by user. ^^;;
-    # pwtform.estimate(o_vertices, n_vertices)
-    # pwtform.estimate(gDeformedMesh.vertices, gOriginalMesh.vertices)
-    pwtform.estimate(tgt_v, src_v)      # without visible mesh
-
-    # warping sub-triangles
-    # warpedUpperClothfloat = warp(uppercloth, pwtform, output_shape=(size, size))
-    warpedUpperClothfloat = warp(
-        cloth, pwtform, output_shape=(cloth.shape))
-
-    # 4.4 convert type from float64 to uint8
-    warpedUpperClothfloat = 255 * warpedUpperClothfloat  # Now scale by 255
-    warpedUpperCloth = warpedUpperClothfloat.astype(np.uint8)
-
-    return warpedUpperCloth, gOriginalMesh, gDeformedMesh, gSelectedVertices
-
-
 ########################################################################################
 # Test case generation
 #
@@ -335,9 +249,8 @@ def apply_arap(cloth, cloth_x_vals, cloth_y_vals, smpl_x_vals, smpl_y_vals):
 
 # construct a squared mesh (a special type)
 def MakeSampleMesh(nRowLen, offset=0.0, step=1.0):
-    # 1.vertices and triangle space
-    # mesh = TriangleMesh(nRowLen)
 
+    # 1.vertices and triangle space
     vertices = np.zeros((nRowLen * nRowLen, 2), dtype=float)
     triangles = np.zeros(((nRowLen - 1) * (nRowLen - 1) * 2, 3), dtype=int)
 
@@ -354,7 +267,6 @@ def MakeSampleMesh(nRowLen, offset=0.0, step=1.0):
         for xi in range(nRowLen):
             x = xOffset + xi * xStep
             vertices[index] = (x, y)
-            # print("x,y", (x,y))
             index += 1
 
     # 2.2 vertices of triangle
