@@ -101,6 +101,7 @@ def cloth_masking_with_grabcut(im_path, mask_path, viz=False):
 
     # 6. save result
     gc_mask[gc_mask > 0] = 255    # make visible white
+    print("Saving ", save_path)
     cv2.imwrite(mask_path, gc_mask)
 
 

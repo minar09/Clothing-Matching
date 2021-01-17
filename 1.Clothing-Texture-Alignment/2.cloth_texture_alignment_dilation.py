@@ -82,9 +82,9 @@ def cloth_boundary_extrapolation(im_path, mask_path, save_path, viz=False, save=
 
     # save result
     if save:
-        # save result
         img_float32 = np.float32(exp_img)
         bgr_img = cv2.cvtColor(img_float32, cv2.COLOR_RGB2BGR)
+        print("Saving ", save_path)
         cv2.imwrite(save_path, bgr_img)
 
 

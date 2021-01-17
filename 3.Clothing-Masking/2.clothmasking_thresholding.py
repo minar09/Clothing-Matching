@@ -70,6 +70,7 @@ def cloth_masking(im_path, save_path, viz=False):
         plt.show()
 
     # save result
+    print("Saving ", save_path)
     cv2.imwrite(save_path, th_eroded)
 
 
